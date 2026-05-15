@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +18,6 @@ Route::middleware(['guest'])->group(function () {
 
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
-
     Route::post('/logout', [AssessmentController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [AssessmentController::class, 'dashboard'])->name('dashboard');
 
@@ -30,11 +28,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/delete/{id}', [AssessmentController::class, 'deleteStudent'])->name('students.delete');
     });
 
-    // Subjects
+    // Subjects — PINALITAN NG PATCH
     Route::prefix('subjects')->group(function () {
         Route::get('/', [AssessmentController::class, 'manageSubjects'])->name('subjects.index');
         Route::post('/store', [AssessmentController::class, 'storeSubject'])->name('subjects.store');
-        Route::put('/update/{id}', [AssessmentController::class, 'updateSubject'])->name('subjects.update');
+        Route::patch('/update/{id}', [AssessmentController::class, 'updateSubject'])->name('subjects.update');
         Route::delete('/delete/{id}', [AssessmentController::class, 'deleteSubject'])->name('subjects.delete');
     });
 
@@ -42,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('assessments')->group(function () {
         Route::get('/', [AssessmentController::class, 'manageAssessments'])->name('assessment');
         Route::post('/store', [AssessmentController::class, 'store'])->name('assessments.store');
-        Route::delete('/delete/{id}', [AssessmentController::class, 'destroy'])->name('assessments.destroy'); // <-- ADDED
+        Route::delete('/delete/{id}', [AssessmentController::class, 'destroy'])->name('assessments.destroy');
     });
 
     // Reports
