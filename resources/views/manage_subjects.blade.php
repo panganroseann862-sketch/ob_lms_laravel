@@ -50,6 +50,7 @@
         padding: 24px;
     }
 
+    /* FORM */
     .form-label {
         font-size: 11px;
         font-weight: 700;
@@ -99,6 +100,7 @@
         color: #fff;
     }
 
+    /* TABLE */
     .ob-table {
         width: 100%;
         border-collapse: collapse;
@@ -155,6 +157,7 @@
         color: #c4b8e0;
     }
 
+    /* ACTION BUTTONS */
     .btn-edit {
         background: #f0ebff;
         border: 1px solid #ddd5f8;
@@ -193,6 +196,7 @@
         color: #a93226;
     }
 
+    /* EMPTY STATE */
     .empty-state {
         text-align: center;
         padding: 40px 20px;
@@ -207,6 +211,7 @@
         font-size: 13px;
     }
 
+    /* MODAL */
     .modal-content {
         border: none;
         border-radius: 18px;
@@ -342,6 +347,42 @@
                             </form>
                         </td>
                     </tr>
+
+                    {{-- EDIT MODAL --}}
+                    <div class="modal fade" id="editModal{{ $sub->id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Edit Subject</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form action="{{ route('subjects.update', $sub->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Subject Code</label>
+                                            <input type="text" name="subject_code" class="form-control" value="{{ $sub->subject_code }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Subject Name</label>
+                                            <input type="text" name="subject_name" class="form-control" value="{{ $sub->subject_name }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Assigned Instructor</label>
+                                            <input type="text" name="instructor" class="form-control" value="{{ $sub->instructor }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn-update">
+                                            <i class="fas fa-save me-1"></i> Update Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     @endforeach
                 </tbody>
             </table>
@@ -353,44 +394,6 @@
             @endif
         </div>
     </div>
-
-    {{-- EDIT MODALS — INILABAS SA LABAS NG TABLE --}}
-    @foreach($subjects as $sub)
-    <div class="modal fade" id="editModal{{ $sub->id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Edit Subject</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ route('subjects.update', $sub->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Subject Code</label>
-                            <input type="text" name="subject_code" class="form-control" value="{{ $sub->subject_code }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Subject Name</label>
-                            <input type="text" name="subject_name" class="form-control" value="{{ $sub->subject_name }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Assigned Instructor</label>
-                            <input type="text" name="instructor" class="form-control" value="{{ $sub->instructor }}" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn-update">
-                            <i class="fas fa-save me-1"></i> Update Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    @endforeach
 
 </div>
 
