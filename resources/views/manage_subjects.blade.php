@@ -267,6 +267,14 @@
         <p>Add and manage subjects offered this semester.</p>
     </div>
 
+    {{-- SUCCESS MESSAGE --}}
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius:12px; font-size:13px;">
+        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
     {{-- ADD SUBJECT FORM --}}
     <div class="ob-card">
         <div class="ob-card-header">
@@ -354,7 +362,7 @@
         </div>
     </div>
 
-    {{-- EDIT MODALS — INILABAS SA LABAS NG TABLE --}}
+    {{-- EDIT MODALS --}}
     @foreach($subjects as $sub)
     <div class="modal fade" id="editModal{{ $sub->id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -363,21 +371,22 @@
                     <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Edit Subject</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+                {{-- GINAWANG POST + _method PUT para siguradong gumagana sa Railway --}}
                 <form action="{{ route('subjects.update', $sub->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Subject Code</label>
-                            <input type="text" name="subject_code" class="form-control" value="{{ $sub->subject_code }}" required>
+                            <input type="text" name="subject_code" class="form-control" value="{{ old('subject_code', $sub->subject_code) }}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Subject Name</label>
-                            <input type="text" name="subject_name" class="form-control" value="{{ $sub->subject_name }}" required>
+                            <input type="text" name="subject_name" class="form-control" value="{{ old('subject_name', $sub->subject_name) }}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Assigned Instructor</label>
-                            <input type="text" name="instructor" class="form-control" value="{{ $sub->instructor }}" required>
+                            <input type="text" name="instructor" class="form-control" value="{{ old('instructor', $sub->instructor) }}" required>
                         </div>
                     </div>
                     <div class="modal-footer">
