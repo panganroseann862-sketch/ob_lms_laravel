@@ -371,10 +371,9 @@
                     <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Edit Subject</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                {{-- GINAWANG POST + _method PUT para siguradong gumagana sa Railway --}}
                 <form action="{{ route('subjects.update', $sub->id) }}" method="POST">
                     @csrf
-                    @method('PUT')
+                    @method('PATCH')
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Subject Code</label>
