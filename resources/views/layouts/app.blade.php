@@ -39,9 +39,12 @@
         /* ── PAGE CONTENT ── */
         #page-content-wrapper {
             width: 100%;
-            transition: padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            /* FIX: Removed transition with transform — transform creates a new stacking
+               context which traps Bootstrap modals and prevents them from appearing
+               above the content. Using margin-left instead. */
             padding-left: 0;
             min-height: 100vh;
+            transition: padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @media (min-width: 768px) {
@@ -280,25 +283,35 @@
             position: fixed;
             inset: 0;
             background: rgba(30,19,84,0.35);
-            z-index: 99;
+            /* FIX: z-index babaan para hindi maharang ang modals */
+            z-index: 50;
             backdrop-filter: blur(2px);
             opacity: 0;
             transition: opacity 0.3s;
+            /* FIX: pointer-events none by default, ino-on lang kapag toggled */
+            pointer-events: none;
         }
         #wrapper.toggled #sidebar-overlay {
             display: block;
             opacity: 1;
+            pointer-events: auto;
         }
         @media (min-width: 768px) {
             #sidebar-overlay { display: none !important; }
         }
 
-        /* ── MODAL ── */
+        /* ── MODAL FIX ── */
+        /* FIX: Siguraduhin na ang modals ay laging nasa taas ng lahat */
         .modal {
             z-index: 1055 !important;
         }
         .modal-backdrop {
             z-index: 1054 !important;
+        }
+        /* FIX: Kapag bukas ang modal, i-disable ang overlay at sidebar toggle */
+        body.modal-open #sidebar-overlay {
+            pointer-events: none !important;
+            z-index: 0 !important;
         }
     </style>
 </head>
@@ -426,6 +439,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // ── SIDEBAR TOGGLE ──
     $("#menu-toggle").click(function () {
         $("#wrapper").toggleClass("toggled");
     });
@@ -434,6 +448,16 @@
         $("#wrapper").removeClass("toggled");
     });
 
+    // ── FIX: Kapag nagbubukas ng modal, isara muna ang sidebar (especially sa mobile)
+    // at siguraduhing hindi nakaharang ang anumang element sa modal inputs
+    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            // Isara ang sidebar bago buksan ang modal para maiwasan ang z-index conflicts
+            $("#wrapper").removeClass("toggled");
+        });
+    });
+
+    // ── PAGE TRANSITION ──
     document.querySelectorAll(".nav-link-item").forEach(function (link) {
         link.addEventListener("click", function (e) {
             const href = this.getAttribute("href");
@@ -451,6 +475,7 @@
         });
     });
 
+    // ── NAVBAR SCROLL SHADOW ──
     const navbar = document.querySelector(".top-navbar");
     window.addEventListener("scroll", function () {
         if (window.scrollY > 10) {
