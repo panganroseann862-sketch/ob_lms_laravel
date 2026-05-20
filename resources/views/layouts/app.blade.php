@@ -22,7 +22,7 @@
             min-height: 100vh;
             width: 260px;
             position: fixed;
-            z-index: 1000;
+            z-index: 100;
             background: #ffffff;
             border-right: 1px solid #ece9f8;
             transform: translateX(-260px);
@@ -190,7 +190,7 @@
             justify-content: space-between;
             position: sticky;
             top: 0;
-            z-index: 999;
+            z-index: 99;
             box-shadow: 0 2px 12px rgba(59,40,168,0.05);
             transition: box-shadow 0.3s;
         }
@@ -280,7 +280,7 @@
             position: fixed;
             inset: 0;
             background: rgba(30,19,84,0.35);
-            z-index: 999;
+            z-index: 99;
             backdrop-filter: blur(2px);
             opacity: 0;
             transition: opacity 0.3s;
@@ -291,6 +291,14 @@
         }
         @media (min-width: 768px) {
             #sidebar-overlay { display: none !important; }
+        }
+
+        /* ── MODAL ── */
+        .modal {
+            z-index: 1055 !important;
+        }
+        .modal-backdrop {
+            z-index: 1054 !important;
         }
     </style>
 </head>
@@ -372,7 +380,6 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="user-profile-name">{{ Auth::user()->username ?? 'admin' }}</span>
 
-                    <!-- ✅ OB-LMS LOGO AS PROFILE AVATAR -->
                     <div class="navbar-avatar">
                         <svg width="34" height="34" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="340" cy="340" r="340" fill="#3b1f7a"/>
