@@ -32,10 +32,9 @@ class ReportController extends Controller
         $semester = $request->semester;
         $term = $request->term;
 
-        // ✅ FIX 1: Palitan ang + ng space
+        // FIX: Palitan ang + ng space
         $assessment_name = str_replace('+', ' ', $request->assessment);
 
-        // ✅ FIX 2: Tanggal na ang where('term') dahil hindi nagma-match (Final vs Finals)
         $mapping = DB::table('assessments')
             ->where('subject_id', $request->subject_id)
             ->where('school_year', $request->school_year)
@@ -81,7 +80,6 @@ class ReportController extends Controller
             }
 
             if ($mapping && !empty($mapping->po_id)) {
-                // ✅ FIX 3: trim() bawat PO para matanggal ang spaces
                 $mapped_pos = array_map('trim', explode(',', $mapping->po_id));
                 $desc_list = [];
 
@@ -102,6 +100,7 @@ class ReportController extends Controller
                 $student->mapped_po = "N/A";
             }
 
+            // Status logic: Below 75 = At Risk, 75-89 = Passed, 90+ = Excellent
             if ($student->score >= 90) {
                 $student->goal = "EXCELLENT";
                 $student->statusClass = "status-excellent";
@@ -118,11 +117,22 @@ class ReportController extends Controller
         }
 
         $at_risk_count = $summary['at_risk'];
+        $total = count($students);
+
         if ($at_risk_count > 0) {
-            $summary['message'] = "$at_risk_count student(s) need improvement.";
+            // Collect names of at-risk students
+            $at_risk_names = $students->filter(function ($s) {
+                return $s->goal === 'AT RISK';
+            })->map(function ($s) {
+                return ucfirst(strtolower($s->lastname)) . ', ' . ucfirst(strtolower($s->firstname));
+            })->values()->toArray();
+
+            $summary['message'] = "$at_risk_count out of $total students need improvement.";
+            $summary['at_risk_names'] = $at_risk_names;
             $summary['status_color'] = "text-danger";
         } else {
             $summary['message'] = "All students no need to improve.";
+            $summary['at_risk_names'] = [];
             $summary['status_color'] = "text-success";
         }
 
