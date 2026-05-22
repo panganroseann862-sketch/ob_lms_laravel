@@ -32,7 +32,6 @@ class ReportController extends Controller
         $semester = $request->semester;
         $term = $request->term;
 
-        // FIX: Palitan ang + ng space
         $assessment_name = str_replace('+', ' ', $request->assessment);
 
         $mapping = DB::table('assessments')
@@ -44,16 +43,27 @@ class ReportController extends Controller
 
         try {
             $students = DB::table('students')
-                ->leftJoin('grades', 'students.id', '=', 'grades.student_id')
-                ->where('grades.subject_id', $request->subject_id)
-                ->select('students.id', 'students.firstname', 'students.lastname', 'students.student_id_no', 'grades.score')
+                ->join('grades', function($join) use ($request, $mapping) {
+                    $join->on('students.id', '=', 'grades.student_id')
+                         ->where('grades.subject_id', '=', $request->subject_id)
+                         ->where('grades.term', '=', $request->term)
+                         ->where('grades.assessment_id', '=', optional($mapping)->id);
+                })
+                ->select(
+                    'students.id',
+                    'students.firstname',
+                    'students.lastname',
+                    'students.student_id_no',
+                    'grades.score'
+                )
                 ->get();
 
             if ($students->isEmpty()) {
-                $students = DB::table('students')->get();
+                return back()->with('error', 'No grades found for this assessment.');
             }
+
         } catch (\Exception $e) {
-            $students = DB::table('students')->get();
+            return back()->with('error', 'Error: ' . $e->getMessage());
         }
 
         $po_descriptions = [
@@ -75,9 +85,6 @@ class ReportController extends Controller
         $summary = ['excellent' => 0, 'passed' => 0, 'at_risk' => 0];
 
         foreach ($students as $student) {
-            if (!isset($student->score) || $student->score == null) {
-                $student->score = rand(80, 96);
-            }
 
             if ($mapping && !empty($mapping->po_id)) {
                 $mapped_pos = array_map('trim', explode(',', $mapping->po_id));
@@ -120,14 +127,13 @@ class ReportController extends Controller
         $total = count($students);
 
         if ($at_risk_count > 0) {
-            // Collect names of at-risk students
             $at_risk_names = $students->filter(function ($s) {
                 return $s->goal === 'AT RISK';
             })->map(function ($s) {
                 return ucfirst(strtolower($s->lastname)) . ', ' . ucfirst(strtolower($s->firstname));
             })->values()->toArray();
 
-            $summary['message'] = "$at_risk_count out of $total students need improvement.";
+            $summary['message'] = "$at_risk_count out of $total students are at risk and need improvement.";
             $summary['at_risk_names'] = $at_risk_names;
             $summary['status_color'] = "text-danger";
         } else {
