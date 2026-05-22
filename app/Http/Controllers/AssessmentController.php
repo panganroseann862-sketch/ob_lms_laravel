@@ -50,16 +50,42 @@ class AssessmentController extends Controller
     }
 
     public function storeStudent(Request $request) {
-        DB::table('students')->insert([
+        // Insert student
+        $studentId = DB::table('students')->insertGetId([
             'student_id_no' => $request->student_id_no,
             'firstname'     => $request->firstname,
             'lastname'      => $request->lastname,
             'created_at'    => now()
         ]);
+
+        // Auto-insert grades for all existing assessments
+        $assessments = DB::table('assessments')->get();
+        foreach ($assessments as $assessment) {
+            $rand = rand(1, 100);
+            if ($rand <= 20) {
+                $score = rand(50, 74);
+            } elseif ($rand <= 60) {
+                $score = rand(75, 89);
+            } else {
+                $score = rand(90, 100);
+            }
+
+            DB::table('grades')->insert([
+                'student_id'    => $studentId,
+                'subject_id'    => $assessment->subject_id,
+                'assessment_id' => $assessment->id,
+                'term'          => $assessment->term,
+                'score'         => $score,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Student added!');
     }
 
     public function deleteStudent(int $id) {
+        DB::table('grades')->where('student_id', $id)->delete();
         DB::table('students')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Student deleted!');
     }
@@ -116,10 +142,10 @@ class AssessmentController extends Controller
             'po_id'           => 'required|array'
         ]);
 
-        // ✅ FIX: Walang space pagkatapos ng comma
         $po_string = implode(',', $request->input('po_id'));
 
-        DB::table('assessments')->insert([
+        // Insert assessment
+        $assessmentId = DB::table('assessments')->insertGetId([
             'school_year' => $request->school_year,
             'semester'    => $request->semester,
             'subject_id'  => $request->subject_id,
@@ -130,10 +156,34 @@ class AssessmentController extends Controller
             'updated_at'  => now()
         ]);
 
+        // Auto-insert grades for all existing students
+        $students = DB::table('students')->get();
+        foreach ($students as $student) {
+            $rand = rand(1, 100);
+            if ($rand <= 20) {
+                $score = rand(50, 74);
+            } elseif ($rand <= 60) {
+                $score = rand(75, 89);
+            } else {
+                $score = rand(90, 100);
+            }
+
+            DB::table('grades')->insert([
+                'student_id'    => $student->id,
+                'subject_id'    => $request->subject_id,
+                'assessment_id' => $assessmentId,
+                'term'          => $request->term,
+                'score'         => $score,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        }
+
         return redirect()->route('assessment')->with('success', 'Mapping Saved Successfully!');
     }
 
     public function destroy(int $id) {
+        DB::table('grades')->where('assessment_id', $id)->delete();
         DB::table('assessments')->where('id', $id)->delete();
         return redirect()->route('assessment')->with('success', 'Mapping deleted successfully!');
     }
