@@ -2,9 +2,10 @@
 
 @section('content')
 <style>
-    body {
-        background-color: #f4f3fb;
-    }
+   body {
+    background-color: #f4f3fb;
+    overflow: auto !important;
+}
 
     .page-header {
         margin-bottom: 24px;
