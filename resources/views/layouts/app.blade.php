@@ -295,6 +295,10 @@
             pointer-events: none !important;
             z-index: 0 !important;
         }
+        body.modal-open {
+            overflow: auto !important;
+            padding-right: 0 !important;
+        }
     </style>
 </head>
 <body>
