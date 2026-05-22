@@ -284,7 +284,7 @@
 
     .summary-msg {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 12px;
         border-radius: 10px;
         padding: 14px 18px;
@@ -312,10 +312,19 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        margin-top: 1px;
     }
 
     .summary-icon.success { background: #1a6b47; }
     .summary-icon.danger  { background: #9b1c1c; }
+
+    .at-risk-list {
+        margin: 8px 0 0 0;
+        padding-left: 18px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.8;
+    }
 
     /* ── Signatories ── */
     .signatories {
@@ -504,7 +513,21 @@
                     </svg>
                 @endif
             </div>
-            {{ $summary['message'] ?? ($isAtRisk ? 'Some students need improvement.' : 'All students no need to improve.') }}
+            <div>
+                {{-- Main message --}}
+                <div>
+                    {{ $summary['message'] ?? ($isAtRisk ? 'Some students need improvement.' : 'All students no need to improve.') }}
+                </div>
+
+                {{-- List of at-risk students --}}
+                @if($isAtRisk && !empty($summary['at_risk_names']))
+                    <ul class="at-risk-list">
+                        @foreach($summary['at_risk_names'] as $name)
+                            <li>{{ $name }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
         </div>
     </div>
 
