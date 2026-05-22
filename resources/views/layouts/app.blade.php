@@ -17,7 +17,6 @@
             overflow-x: hidden;
         }
 
-        /* ── SIDEBAR ── */
         #sidebar-wrapper {
             min-height: 100vh;
             width: 260px;
@@ -36,12 +35,8 @@
             transform: translateX(0);
         }
 
-        /* ── PAGE CONTENT ── */
         #page-content-wrapper {
             width: 100%;
-            /* FIX: Removed transition with transform — transform creates a new stacking
-               context which traps Bootstrap modals and prevents them from appearing
-               above the content. Using margin-left instead. */
             padding-left: 0;
             min-height: 100vh;
             transition: padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -53,7 +48,6 @@
             }
         }
 
-        /* ── SIDEBAR HEADER ── */
         .sidebar-header {
             padding: 24px 20px 20px;
             text-align: center;
@@ -99,7 +93,6 @@
             text-transform: uppercase;
         }
 
-        /* ── NAV LINKS ── */
         .sidebar-nav {
             padding: 16px 0;
             flex: 1;
@@ -183,7 +176,6 @@
             transform: scale(1.1);
         }
 
-        /* ── NAVBAR ── */
         .top-navbar {
             background: #ffffff;
             border-bottom: 1px solid #ece9f8;
@@ -231,7 +223,6 @@
             font-size: 0.9rem;
         }
 
-        /* ── NAVBAR PROFILE AVATAR ── */
         .navbar-avatar {
             width: 38px;
             height: 38px;
@@ -250,7 +241,6 @@
             transform: scale(1.05);
         }
 
-        /* ── DROPDOWN ── */
         .dropdown-toggle {
             transition: transform 0.2s;
         }
@@ -258,7 +248,6 @@
             transform: translateY(-1px);
         }
 
-        /* Dropdown logout - purple theme */
         .dropdown-menu .logout-btn {
             color: #6c47d6 !important;
             font-weight: 700;
@@ -268,7 +257,6 @@
             color: #3b1f7a !important;
         }
 
-        /* ── PAGE TRANSITION ── */
         #page-body {
             animation: pageIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
         }
@@ -277,18 +265,15 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── OVERLAY (mobile) ── */
         #sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(30,19,84,0.35);
-            /* FIX: z-index babaan para hindi maharang ang modals */
             z-index: 50;
             backdrop-filter: blur(2px);
             opacity: 0;
             transition: opacity 0.3s;
-            /* FIX: pointer-events none by default, ino-on lang kapag toggled */
             pointer-events: none;
         }
         #wrapper.toggled #sidebar-overlay {
@@ -300,15 +285,12 @@
             #sidebar-overlay { display: none !important; }
         }
 
-        /* ── MODAL FIX ── */
-        /* FIX: Siguraduhin na ang modals ay laging nasa taas ng lahat */
         .modal {
             z-index: 1055 !important;
         }
         .modal-backdrop {
             z-index: 1054 !important;
         }
-        /* FIX: Kapag bukas ang modal, i-disable ang overlay at sidebar toggle */
         body.modal-open #sidebar-overlay {
             pointer-events: none !important;
             z-index: 0 !important;
@@ -319,10 +301,8 @@
 
 <div class="d-flex" id="wrapper">
 
-    <!-- Sidebar overlay for mobile -->
     <div id="sidebar-overlay"></div>
 
-    <!-- SIDEBAR -->
     <div id="sidebar-wrapper">
         <div class="sidebar-header">
             <div class="logo-wrap">
@@ -378,10 +358,8 @@
         </nav>
     </div>
 
-    <!-- PAGE CONTENT -->
     <div id="page-content-wrapper">
 
-        <!-- TOP NAVBAR -->
         <nav class="top-navbar">
             <div class="d-flex align-items-center">
                 <button id="menu-toggle">☰</button>
@@ -428,7 +406,6 @@
             </div>
         </nav>
 
-        <!-- CONTENT -->
         <div id="page-body" class="container-fluid p-4">
             @yield('content')
         </div>
@@ -439,7 +416,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // ── SIDEBAR TOGGLE ──
     $("#menu-toggle").click(function () {
         $("#wrapper").toggleClass("toggled");
     });
@@ -448,20 +424,17 @@
         $("#wrapper").removeClass("toggled");
     });
 
-    // ── FIX: Kapag nagbubukas ng modal, isara muna ang sidebar (especially sa mobile)
-    // at siguraduhing hindi nakaharang ang anumang element sa modal inputs
     document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            // Isara ang sidebar bago buksan ang modal para maiwasan ang z-index conflicts
             $("#wrapper").removeClass("toggled");
         });
     });
 
-    // ── PAGE TRANSITION ──
     document.querySelectorAll(".nav-link-item").forEach(function (link) {
         link.addEventListener("click", function (e) {
             const href = this.getAttribute("href");
             if (!href || href === "#") return;
+            if (document.querySelector('.modal.show')) return;
             e.preventDefault();
 
             const body = document.getElementById("page-body");
@@ -475,7 +448,6 @@
         });
     });
 
-    // ── NAVBAR SCROLL SHADOW ──
     const navbar = document.querySelector(".top-navbar");
     window.addEventListener("scroll", function () {
         if (window.scrollY > 10) {
